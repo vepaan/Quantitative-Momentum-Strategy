@@ -2,6 +2,7 @@ import csv
 import yfinance as yf
 import pandas as pd
 from datetime import datetime, timedelta
+import os
 
 # Function to get stock data from yfinance
 def get_stock_data(ticker, months_range):
@@ -49,8 +50,24 @@ with open(file_path, mode='r') as file:
 # Dictionary to store RSI values for each ticker
 stock_rsi = {}
 
+# List to hold all data for the portfolio
+portfolio_data = []
+
+# Ensure the portfolios directory exists
+output_dir = 'portfolios'
+os.makedirs(output_dir, exist_ok=True)
+output_file = os.path.join(output_dir, 'portfolio.csv')
+
+# Define the columns for the output CSV
+output_columns = ['Ticker', 'Date', 'Open', 'High', 'Low', 'Close', 'Volume', 'RSI']
+
+# Initialize the CSV file with headers
+with open(output_file, mode='w', newline='') as csvfile:
+    writer = csv.writer(csvfile)
+    writer.writerow(output_columns)
+
 # Process each sector and its tickers
-months_range = 2  # Adjust this for the date range (months)
+months_range = 1  # Adjust this for the date range (months)
 for sector, tickers in sector_tickers.items():
     print(f"Processing sector: {sector}")
     
@@ -60,19 +77,48 @@ for sector, tickers in sector_tickers.items():
             # Fetch stock data for the ticker
             data = get_stock_data(ticker, months_range)
             
+            if data.empty:
+                print(f"No data fetched for {ticker}. Skipping...")
+                continue
+            
             # Calculate RSI for the stock
             rsi = calculate_rsi(data)
             
+            # Add RSI to the DataFrame
+            data['RSI'] = rsi
+            
+            # Drop rows where RSI is NaN (first 'period' rows)
+            data.dropna(subset=['RSI'], inplace=True)
+            
+            # Add a Ticker column
+            data['Ticker'] = ticker
+            
+            # Reorder columns to match output_columns
+            data = data.reset_index()
+            data = data[['Ticker', 'Date', 'Open', 'High', 'Low', 'Close', 'Volume', 'RSI']]
+            
+            # Append to the portfolio_data list
+            portfolio_data.append(data)
+            
             # Store the most recent RSI value
-            stock_rsi[ticker] = rsi.iloc[-1]  # Most recent RSI value
+            stock_rsi[ticker] = data['RSI'].iloc[-1]  # Most recent RSI value
             
             print(f"RSI for {ticker}: {stock_rsi[ticker]}")
         except Exception as e:
             print(f"Failed to process {ticker}: {e}")
 
-# Print the collected RSIs for each stock
+# Concatenate all data into a single DataFrame
+if portfolio_data:
+    portfolio_df = pd.concat(portfolio_data, ignore_index=True)
+    
+    # Save the DataFrame to CSV
+    portfolio_df.to_csv(output_file, mode='a', index=False, header=False)
+    
+    print(f"\nAll data and RSI values have been saved to '{output_file}'.")
+else:
+    print("No portfolio data to save.")
+
+# Optionally, print the collected RSIs for each stock
 print("\nRSI values for all stocks:")
 for ticker, rsi_value in stock_rsi.items():
     print(f"{ticker}: {rsi_value}")
-
-# You can store the RSI values in a CSV or use them further in your code.
