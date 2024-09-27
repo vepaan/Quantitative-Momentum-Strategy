@@ -24,19 +24,19 @@ for ticker in stock_data['Ticker'].unique():
         latest_rsi = ticker_data['RSI'].iloc[-1]
         latest_close = ticker_data['Close'].iloc[-1]
 
-        if latest_rsi < 35 and latest_close < lower_band.iloc[-1]:  # Buy signal
-            risk_averse_signal = 'Buy'
-        elif latest_rsi > 65 and latest_close > upper_band.iloc[-1]:  # Sell signal
-            risk_averse_signal = 'Sell'
+        if latest_rsi < 30:  # Buy signal
+            rsi_signal = 'Buy'
+        elif latest_rsi > 70:  # Sell signal
+            rsi_signal = 'Sell'
         else:  # Hold signal
-            risk_averse_signal = 'Hold'
+            rsi_signal = 'Hold'
 
-        if latest_rsi < 35 or latest_close < lower_band.iloc[-1]:  # Buy signal
-            aggresive_signal = 'Long'
-        elif latest_rsi > 65 or latest_close > upper_band.iloc[-1]:  # Sell signal
-            aggresive_signal = 'Short'
+        if latest_close < lower_band.iloc[-1]:  # Buy signal
+            MA_signal = 'Buy'
+        elif latest_close > upper_band.iloc[-1]:  # Sell signal
+            MA_signal = 'Sell'
         else:  # Hold signal
-            aggresive_signal = 'Hold'
+            MA_signal = 'Hold'
 
         signals.append({
             'Ticker': ticker,
@@ -45,9 +45,9 @@ for ticker in stock_data['Ticker'].unique():
             'Upper Band': upper_band.iloc[-1],
             'Lower Band': lower_band.iloc[-1],
             'Latest Close': latest_close,
-            'SafeSignal': risk_averse_signal,
-            'AggresiveSignal': aggresive_signal
+            'RSI signal': rsi_signal,
+            'MA signal': MA_signal
         })
 
 signals_df = pd.DataFrame(signals)
-signals_df.to_csv('portfolios/portfolio.csv', index=False)
+signals_df.to_csv('portfolios/RSI_Bollinger.csv', index=False)
