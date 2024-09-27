@@ -2,16 +2,19 @@ import csv
 import yfinance as yf
 import pandas as pd
 from datetime import datetime, timedelta
+from dateutil.relativedelta import relativedelta
 import os
 
-months_range=2
+months_range=1
 
 def get_stock_data(ticker, months_range):
     end_date = datetime.now()
-    start_date = end_date - timedelta(days=months_range * 30)
+    start_date = end_date - timedelta((months_range*30+20)) # adjusting for the 14 day rsi and 20 day window for moving average (major error debugged)
 
     start_date_str = start_date.strftime('%Y-%m-%d')
     end_date_str = end_date.strftime('%Y-%m-%d')
+
+    print(end_date_str,start_date_str)
 
     data = yf.download(ticker, start=start_date_str, end=end_date_str)
     return data
@@ -76,6 +79,7 @@ def process_portfolio(months_range):
                 # Fetch stock data for the ticker
                 data = get_stock_data(ticker, months_range)
                 
+                #error start
                 if data.empty:
                     print(f"No data fetched for {ticker}. Skipping...")
                     continue
@@ -95,7 +99,9 @@ def process_portfolio(months_range):
                 # Reorder columns to match output_columns
                 data = data.reset_index()
                 data = data[['Ticker', 'Date', 'Open', 'High', 'Low', 'Close', 'Volume', 'RSI']]
-                
+
+                #error end print(data)
+
                 # Append to the portfolio_data list
                 portfolio_data.append(data)
                 
@@ -124,5 +130,5 @@ def process_portfolio(months_range):
 
 # Main execution block
 if __name__ == "__main__":
-    months_range = 2  # Adjust this for the date range (months)
-    process_portfolio(months_range)
+    months = months_range  # Adjust this for the date range (months)
+    process_portfolio(months)

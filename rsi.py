@@ -2,16 +2,16 @@ import pandas as pd
 from get_data import months_range
 
 # Convert months_range to days
-months_range = int(months_range * 30)
+days = int(months_range * 30)
 
 # Load the stock data (assumed to include the 'Close' price)
 stock_data = pd.read_csv('data/processed_data/portfolio_data.csv')
 
 # Function to calculate Bollinger Bands using closing prices
-def calculate_bollinger_bands(data, window=20, num_std_dev=2):
+def calculate_bollinger_bands(data, windoww, num_std_dev=2):
     """Calculates the Bollinger Bands based on closing prices."""
-    rolling_mean = data['Close'].rolling(window=window).mean()
-    rolling_std = data['Close'].rolling(window=window).std()
+    rolling_mean = data['Close'].rolling(window=windoww).mean()
+    rolling_std = data['Close'].rolling(window=windoww).std()
 
     upper_band = rolling_mean + (rolling_std * num_std_dev)
     lower_band = rolling_mean - (rolling_std * num_std_dev)
@@ -24,11 +24,12 @@ signals = []
 # Loop through each ticker
 for ticker in stock_data['Ticker'].unique():
     ticker_data = stock_data[stock_data['Ticker'] == ticker]
+    count_ticker_data = len(ticker_data)
 
     # Ensure there are enough data points
-    if len(ticker_data) >= 20:  # Use 20 for the moving average window
+    if count_ticker_data>=1:  # set the 0 to any number that you want the moving average window to be, im using 0 for a higher flexibility.
         # Calculate Bollinger Bands using the closing prices
-        upper_band, lower_band = calculate_bollinger_bands(ticker_data)
+        upper_band, lower_band = calculate_bollinger_bands(ticker_data, (count_ticker_data-1))
 
         # Get the most recent RSI and closing price
         latest_rsi = ticker_data['RSI'].iloc[-1]
@@ -59,6 +60,7 @@ for ticker in stock_data['Ticker'].unique():
             'SafeSignal': risk_averse_signal,
             'AggresiveSignal': aggresive_signal
         })
+
 
 # Convert the signals to a DataFrame
 signals_df = pd.DataFrame(signals)
