@@ -5,7 +5,6 @@ days = int(months_range * 30)
 stock_data = pd.read_csv('data/processed_data/portfolio_data.csv')
 
 def calculate_bollinger_bands(data, windoww, num_std_dev=2):
-    """Calculates the Bollinger Bands based on closing prices."""
     rolling_mean = data['Close'].rolling(window=windoww).mean()
     rolling_std = data['Close'].rolling(window=windoww).std()
 
