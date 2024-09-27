@@ -10,8 +10,8 @@ rsi_bollinger_df = pd.read_csv(rsi_bollinger_file)
 macd_df = pd.read_csv(macd_file)
 
 if 'Ticker' in rsi_bollinger_df.columns and 'Ticker' in macd_df.columns:
-    rsi_bollinger_selected = rsi_bollinger_df[['Ticker', 'Date', 'RSI signal', 'MA signal']]
-    macd_selected = macd_df[['Ticker', 'Date', 'MACD Signal']]
+    rsi_bollinger_selected = rsi_bollinger_df[['Ticker', 'Date', 'Latest Close', 'Upper Band', 'Lower Band', 'RSI', 'RSI signal', 'MA signal']]
+    macd_selected = macd_df[['Ticker', 'Date', 'MACD', 'Signal','MACD Signal']]
 
     combined_df = pd.merge(rsi_bollinger_selected, macd_selected, on=['Ticker', 'Date'], how='outer', suffixes=('x', 'y'))
 
