@@ -4,7 +4,7 @@ import pandas as pd
 from datetime import datetime, timedelta
 import os
 
-months_range=3
+months_range=12
 
 def get_stock_data(ticker, months_range):
     end_date = datetime.now()

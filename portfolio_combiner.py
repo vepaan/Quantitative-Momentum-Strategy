@@ -22,7 +22,7 @@ else:
 momentum_data = []
 for ticker in data['Ticker'].unique():
     close_data = data[data['Ticker'] == ticker]
-    momentum = (close_data['Close'].iloc[-1]) / (close_data['Close'].iloc[0])
+    momentum = (close_data['Close'].iloc[-30]) / (close_data['Close'].iloc[0])
     momentum_data.append({'Ticker': ticker, 'Momentum': momentum})
 
 momentum_df = pd.DataFrame(momentum_data)
