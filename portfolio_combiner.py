@@ -11,7 +11,7 @@ macd_df = pd.read_csv(macd_file)
 data = pd.read_csv(portfolio_data_file)
 
 if 'Ticker' in rsi_bollinger_df.columns and 'Ticker' in macd_df.columns:
-    rsi_bollinger_selected = rsi_bollinger_df[['Ticker', 'Date', 'Latest Close', 'Upper Band', 'Lower Band', 'RSI', 'RSI signal', 'MA signal']]
+    rsi_bollinger_selected = rsi_bollinger_df[['Ticker', 'Date', 'Latest Close', 'Upper Band', 'Lower Band', 'RSI', 'RSI signal', 'Bollinger signal']]
     macd_selected = macd_df[['Ticker', 'Date', 'MACD', 'Signal', 'MACD Signal']]
     combined_df = pd.merge(rsi_bollinger_selected, macd_selected, on=['Ticker', 'Date'], how='outer', suffixes=('x', 'y'))
     combined_df = combined_df.loc[:, ~combined_df.columns.duplicated()]
@@ -34,7 +34,7 @@ combined_df['Momentum Signal'] = combined_df['Momentum'].apply(
 )
 
 # im reordering the buy signlas at last so its easier to compare
-signal_columns = ['RSI signal', 'MA signal', 'MACD Signal', 'Momentum Signal']
+signal_columns = ['RSI signal', 'Bollinger signal', 'MACD Signal', 'Momentum Signal']
 non_signal_columns = [col for col in combined_df.columns if col not in signal_columns]
 ordered_columns = non_signal_columns + signal_columns
 combined_df = combined_df[ordered_columns]

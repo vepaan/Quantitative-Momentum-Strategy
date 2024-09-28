@@ -20,7 +20,7 @@ for ticker in stock_data['Ticker'].unique():
     count_ticker_data = len(ticker_data) #ideally len(ticker_data) should be above 20 for a more accurate momentum
 
     if count_ticker_data>=1:  # set the 0 to any number that you want the moving average window to be, im using 0 for a higher flexibility.
-        upper_band, lower_band = calculate_bollinger_bands(ticker_data, (count_ticker_data-1))
+        upper_band, lower_band = calculate_bollinger_bands(ticker_data, 7)
         latest_rsi = ticker_data['RSI'].iloc[-1]
         latest_close = ticker_data['Close'].iloc[-1]
 
@@ -46,7 +46,7 @@ for ticker in stock_data['Ticker'].unique():
             'Lower Band': lower_band.iloc[-1],
             'Latest Close': latest_close,
             'RSI signal': rsi_signal,
-            'MA signal': MA_signal
+            'Bollinger signal': MA_signal
         })
 
 signals_df = pd.DataFrame(signals)
